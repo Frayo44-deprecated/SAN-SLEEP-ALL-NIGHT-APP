@@ -1,54 +1,27 @@
 package com.example.final2;
 
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.hardware.ConsumerIrManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 @SuppressLint("NewApi")
 public class MainActivity extends Activity {
-
-	 private static final String TAG = "ConsumerIrTest";
+	
 	    TextView mFreqsText, Bulbul;
 	    ConsumerIrManager mCIR;
-	    public int[] preamble= {2930, 2930};
-//	    public int[] data = {1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953};
-	    public int[] data = {1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953, 1953};
-	    public int[] endBurst={3905,3905};
-	    public int[] final_array = new int[preamble.length + data.length];
-//	    public int[] super_final = new int[final_array.length*3 + endBurst.length];
-	    public int Hz = 38000;
+	   
 	    
-	    /**
-	     * Initialization of the Activity after it is first created.  Must at least
-	     * call {@link android.app.Activity#setContentView setContentView()} to
-	     * describe what is to be displayed in the screen.
-	     */
-	    @Override
+	   	@Override
 	    protected void onCreate(Bundle savedInstanceState) {
-	        // Be sure to call the super class.
 	        super.onCreate(savedInstanceState);
-	        
-	        for(int i = 0; i < final_array.length; i++)
-	        {
-	        	if(i < preamble.length)
-	        		final_array[i] = preamble[i];
-	        	else 
-	        		final_array[i] = data[i-preamble.length];      	
-	        }
-	        
-	        
+	     
 	        // Get a reference to the ConsumerIrManager
-	        mCIR = (ConsumerIrManager)getSystemService(Context.CONSUMER_IR_SERVICE);
-	        // See assets/res/any/layout/consumer_ir.xml for this
-	        // view layout definition, which is being set here as
-	        // the content of our screen.
+	        this.mCIR = ((ConsumerIrManager)getSystemService("consumer_ir"));
 	        setContentView(R.layout.activity_main);
+	        
 	        // Set the OnClickListener for the button so we see when it's pressed.
 	        findViewById(R.id.send_button).setOnClickListener(mSendClickListener);
 	        findViewById(R.id.get_freqs_button).setOnClickListener(mGetFreqsClickListener);
@@ -58,31 +31,21 @@ public class MainActivity extends Activity {
 	    }
 	    View.OnClickListener mSendClickListener = new View.OnClickListener() {
 	        public void onClick(View v) {
-	            if (!mCIR.hasIrEmitter()) {
-	                Log.e(TAG, "No IR Emitter found\n");
+	        	
+	            if (!mCIR.hasIrEmitter())
 	                return;
-	            }
-	            // A pattern of alternating series of carrier on and off periods measured in
-	            // microseconds.
-	            //int[] pattern = {38028,169,168,21,63,21,63,21,63,21,21,21,21,21,21,21,21,21,21,21,63,21,63,21,63,21,21,21,21,21,21,21,21,21,21,21,21,21,63,21,21,21,21,21,21,21,21,21,21,21,21,21,64,21,21,21,63,21,63,21,63,21,63,21,63,21,63,21,1794,169,168,21,21,21,3694};
-	            // transmit the pattern at 38.4KHz
-	         /*   for(int i=34000; i<=60000; i++){
-	            
-	            	Bulbul.setText(Integer.toString(i));
-	            	Log.e(TAG,Integer.toString(i));
-	            	mCIR.transmit(i, pattern);} */
-	            mCIR.transmit(Hz, final_array);
-	            mCIR.transmit(Hz, final_array);
-	            mCIR.transmit(Hz, final_array);
-	            mCIR.transmit(Hz, endBurst);
+	     
+	            ElectraOnOff();
 	        }
 	    };
+	    
 	    View.OnClickListener mGetFreqsClickListener = new View.OnClickListener() {
 	        public void onClick(View v) {
-	            StringBuilder b = new StringBuilder();
+	        ElectraHeat();
+	          StringBuilder b = new StringBuilder();
 	            if (!mCIR.hasIrEmitter()) {
 	                mFreqsText.setText("No IR Emitter found!");
-	                Log.e(TAG, "No IR Emitter found!\n");
+	                //Log.e(TAG, "No IR Emitter found!\n");
 	                return;
 	            }
 	            // Get the available carrier frequency ranges
@@ -95,4 +58,28 @@ public class MainActivity extends Activity {
 	            mFreqsText.setText(b.toString());
 	        }
 	    };
-	}
+	    
+	    public void ElectraOnOff()
+	    {
+	      int[] electra = {116,141,76,31,41,69,41,31,41,31,76,31,41,69,76,31,41,69,76,69,76,32,41,31,41,31,41,31,41,31,41,31,41,31,41,31,41,31,41,31,41,31,41,31,41,31,41,31,41,31,41,31,41,30,41,69,76,31,115,141,76,30,41,69,41,30,41,31,76,30,41,68,76,31,41,68,76,68,76,30,41,31,41,30,41,31,41,30,41,30,41,31,41,30,41,31,41,30,41,31,41,30,41,30,41,31,41,30,41,31,41,30,41,68,76,32,114,142,76,30,41,68,41,31,41,30,76,30,41,69,76,30,41,68,76,68,76,31,41,30,41,31,41,30,41,30,42,30,41,31,41,30,41,30,41,31,41,30,41,31,41,30,41,31,40,31,41,31,41,31,41,69,76,31,150,2500 };
+	      SendIR(electra);
+	      
+	    }
+	    
+	    public void ElectraHeat() 
+	    {
+		   int[] heat = {116,141,27,54,26,15,26,54,26,54,27,14,26,15,25,54,27,15,25,15,26,54,26,15,26,15,25,54,27,53,27,15,26,54,26,54,27,15,25,54,27,54,26,54,27,54,26,54,27,54,27,14,26,54,26,15,26,15,25,15,25,15,26,15,25,15,26,15,25,54,27,13,26,15,25,15,26,15,25,15,26,15,25,54,26,15,26,54,26,55,26,54,27,53,27,54,27,54,26,207,174,160,27,54,26,15,26,54,26,54,27,15,25,15,25,55,26,15,26,15,25,54,27,14,26,15,25,54,27,54,26,15,26,54,26,55,26,15,25,54,27,54,26,54,27,54,26,55,26,54,27,15,25,54,27,15,25,15,25,15,26,14,26,15,26,14,26,15,25,54,27,15,25,15,25,15,26,15,25,15,26,15,25,54,27,15,25,54,27,54,26,54,27,54,26,54,27,54,150,2500};
+		   SendIR(heat);  
+	    }
+	    
+	    
+	    public void SendIR(int[] paramString)
+	    {
+	    	mCIR.transmit(38000, paramString);
+	    }
+}
+
+	        
+	        
+	        
+	  
